@@ -35,7 +35,6 @@
         
         #drop-zone { display: flex; gap: 30px; margin-top: 40px; min-height: 300px; }
         
-        /* 조립 상자 스타일 및 배경 힌트 글자 스타일 */
         .char-box { width: 250px; height: 250px; border: 4px solid #f0f0f0; background: white; position: relative; border-radius: 30px; display: flex; align-items: center; justify-content: center; }
         .char-box::before { content: attr(data-hint); font-size: 140px; font-weight: 900; color: #ebebeb; position: absolute; z-index: 1; user-select: none; pointer-events: none; }
 
@@ -147,9 +146,33 @@
                 if (file) {
                     const reader = new FileReader();
                     reader.onload = function(event) {
-                        friendsData.push({ name: friendName, photo: event.target.result });
-                        localStorage.setItem('chorong_custom_friends', JSON.stringify(friendsData));
-                        makeStartScreen();
+                        const img = new Image();
+                        img.onload = function() {
+                            // 💡 폰으로 찍은 초고화질 사진을 가로세로 최대 300px 크기로 자동 다이어트 시키는 캔버스 압축 기술 적용
+                            const canvas = document.createElement('canvas');
+                            let width = img.width;
+                            let height = img.height;
+                            const max_size = 300;
+
+                            if (width > height) {
+                                if (width > max_size) { height *= max_size / width; width = max_size; }
+                            } else {
+                                if (height > max_size) { width *= max_size / height; height = max_size; }
+                            }
+                            canvas.width = width;
+                            canvas.height = height;
+                            
+                            const ctx = canvas.getContext('2d');
+                            ctx.drawImage(img, 0, 0, width, height);
+                            
+                            // 용량을 획기적으로 줄인 가벼운 이미지 주소 추출 (.jpeg 화질 70%)
+                            const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.7);
+                            
+                            friendsData.push({ name: friendName, photo: compressedDataUrl });
+                            localStorage.setItem('chorong_custom_friends', JSON.stringify(friendsData));
+                            makeStartScreen();
+                        };
+                        img.src = event.target.result;
                     };
                     reader.readAsDataURL(file);
                 }
@@ -190,146 +213,3 @@
 
         function getJamoList(word) {
             const cho = ["ㄱ","ㄲ","ㄴ","ㄷ","ㄸ","ㄹ","ㅁ","ㅂ","ㅃ","ㅅ","ㅆ","ㅇ","ㅈ","ㅉ","ㅊ","ㅋ","ㅌ","ㅍ","ㅎ"];
-            // 💡 오타 "욕"을 "ㅛ"로 완벽하게 수정했습니다!!
-            const jung = ["ㅏ","ㅐ","ㅑ","ㅒ","ㅓ","ㅔ","ㅕ","ㅖ","ㅗ","ㅘ","ㅙ","ㅚ","ㅛ","ㅜ","ㅝ","ㅞ","ㅟ","ㅠ","ㅡ","ㅢ","ㅣ"];
-            const jong = ["","ㄱ","ㄲ","ㄳ","ㄴ","ㄵ","ㄶ","ㄷ","ㄹ","ㄺ","ㄻ","ㄼ","ㄽ","ㄾ","ㄿ","ㅀ","ㅁ","ㅂ","ㅄ","ㅅ","ㅆ","ㅇ","ㅈ","ㅊ","ㅋ","ㅌ","ㅍ","ㅎ"];
-            const list = [];
-            
-            for (let i = 0; i < word.length; i++) {
-                const code = word.charCodeAt(i) - 44032;
-                if (code < 0 || code > 11171) continue;
-                
-                list.push({ text: cho[Math.floor(code / 588)] });
-                
-                const jungChar = jung[Math.floor((code % 588) / 28)];
-                if (complexJungMap[jungChar]) {
-                    complexJungMap[jungChar].forEach(char => {
-                        list.push({ text: char });
-                    });
-                } else {
-                    list.push({ text: jungChar });
-                }
-                
-                if (code % 28 !== 0) {
-                    list.push({ text: jong[code % 28] });
-                }
-            }
-            return list;
-        }
-
-        function initGame(newName) {
-            currentName = newName;
-            hint.innerText = currentName;
-            
-            if(currentPhoto) {
-                currentPhotoImg.src = currentPhoto;
-                currentPhotoImg.style.display = 'block';
-            } else {
-                currentPhotoImg.style.display = 'none';
-            }
-
-            dropZone.innerHTML = '';
-            bin.innerHTML = '';
-            
-            // 💡 빈 상자에 흐릿한 힌트 글자 깔아주기
-            for(let i=0; i<currentName.length; i++) {
-                const box = document.createElement('div');
-                box.className = 'char-box';
-                box.setAttribute('data-hint', currentName[i]); // 배경 글자 지정
-                dropZone.appendChild(box);
-            }
-            const pieces = getJamoList(currentName).sort(() => Math.random() - 0.5);
-            pieces.forEach(p => createPiece(p.text));
-        }
-
-        function createPiece(text) {
-            const el = document.createElement('div');
-            el.className = 'jamo ready';
-            el.innerText = text;
-            bin.appendChild(el);
-
-            let ox, oy;
-            const start = (e) => {
-                const ev = e.touches ? e.touches[0] : e;
-                const rect = el.getBoundingClientRect();
-                el.classList.remove('ready', 'in-box');
-                el.style.color = '#444';
-                el.style.position = 'fixed';
-                el.style.left = rect.left + 'px';
-                el.style.top = rect.top + 'px';
-                el.style.fontSize = '120px';
-                document.body.appendChild(el);
-                ox = ev.clientX - el.offsetLeft;
-                oy = ev.clientY - el.offsetTop;
-
-                const move = (me) => {
-                    const mev = me.touches ? me.touches[0] : me;
-                    el.style.left = (mev.clientX - ox) + 'px';
-                    el.style.top = (mev.clientY - oy) + 'px';
-                };
-
-                const stop = () => {
-                    window.removeEventListener('mousemove', move);
-                    window.removeEventListener('mouseup', stop);
-                    window.removeEventListener('touchmove', move);
-                    window.removeEventListener('touchend', stop);
-                    
-                    let placed = false;
-                    const boxes = document.getElementsByClassName('char-box');
-                    const binRect = bin.getBoundingClientRect();
-                    const eRect = el.getBoundingClientRect();
-
-                    if (eRect.left < binRect.right && eRect.right > binRect.left &&
-                        eRect.top < binRect.bottom && eRect.bottom > binRect.top) {
-                        returnToBin(el);
-                        placed = true;
-                    } else {
-                        for (let box of boxes) {
-                            const bRect = box.getBoundingClientRect();
-                            if (eRect.left < bRect.right && eRect.right > bRect.left &&
-                                eRect.top < bRect.bottom && eRect.bottom > bRect.top) {
-                                box.appendChild(el);
-                                el.style.position = 'absolute';
-                                el.style.left = (eRect.left - bRect.left) + 'px';
-                                el.style.top = (eRect.top - bRect.top) + 'px';
-                                el.classList.add('in-box');
-                                placed = true;
-                                break;
-                            }
-                        }
-                    }
-                    
-                    if (!placed) {
-                        returnToBin(el);
-                    }
-                };
-                window.addEventListener('mousemove', move);
-                window.addEventListener('mouseup', stop);
-                window.addEventListener('touchmove', move, {passive:false});
-                window.addEventListener('touchend', stop);
-            };
-            el.addEventListener('mousedown', start);
-            el.addEventListener('touchstart', start, {passive:false});
-        }
-
-        function returnToBin(el) {
-            el.classList.add('ready');
-            el.style.position = 'static';
-            el.style.fontSize = '80px';
-            bin.appendChild(el);
-        }
-
-        function resetGame() { initGame(currentName); }
-        
-        function changeName() {
-            const next = prompt("새로운 이름을 입력하세요", currentName);
-            if (next) {
-                currentPhoto = ""; 
-                initGame(next);
-            }
-        }
-
-        makeStartScreen();
-    </script>
-</body>
-</html>
