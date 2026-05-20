@@ -17,7 +17,6 @@
         .btn-add-friend { background: #34C759; color: white; padding: 12px 20px; font-size: 16px; border-radius: 20px; box-shadow: 0 4px 10px rgba(52, 199, 89, 0.3); }
         .btn-direct-input { background: #007AFF; color: white; padding: 12px 20px; font-size: 16px; border-radius: 20px; box-shadow: 0 4px 10px rgba(0, 122, 255, 0.3); }
         
-        /* 파일 방식 전용 버튼 */
         .btn-backup { background: #FF9500; color: white; padding: 12px 20px; font-size: 16px; border-radius: 20px; box-shadow: 0 4px 10px rgba(255, 149, 0, 0.3); }
         .btn-restore { background: #5856D6; color: white; padding: 12px 20px; font-size: 16px; border-radius: 20px; box-shadow: 0 4px 10px rgba(88, 86, 214, 0.3); }
         
@@ -54,7 +53,6 @@
         #bin { width: 100%; height: 180px; background: #f2f2f2; border-top: 3px solid #ddd; position: fixed; bottom: 0; display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 10px; padding: 15px; box-sizing: border-box; z-index: 90; overflow-y: auto; }
         .jamo.ready { position: static; font-size: 50px; background: white; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); padding: 5px 15px; }
         
-        /* 숨겨진 파일 입력창 */
         #file-input, #import-file-input { display: none; }
     </style>
 </head>
@@ -97,7 +95,9 @@
                     totalData = {}; 
                 }
             } catch(e) {
+                console.error("데이터 오류 발생, 초기화합니다.");
                 totalData = {}; 
+                localStorage.setItem('chorong_multi_classes', '{}');
             }
         }
 
@@ -126,7 +126,6 @@
             mainTitle.innerText = "📂 우리 반을 선택해 주세요";
             btnBackFolder.style.display = "none";
             
-            // 💡 파일 내보내기/가져오기 버튼으로 완벽 교체!
             btnGroupArea.innerHTML = `
                 <button class="btn-add-friend" onclick="addClassFolder()">➕ 반 폴더 추가</button>
                 <button class="btn-direct-input" onclick="triggerDirectInput()">✏️ 직접 쓰기</button>
@@ -176,7 +175,6 @@
             });
         }
 
-        // 💡 [선생님용] 데이터를 파일로 깔끔하게 저장 (긴 텍스트 복사 ㅂㅂ!)
         function exportToFile() {
             loadAllData();
             if (Object.keys(totalData).length === 0) {
@@ -199,12 +197,10 @@
             alert("✅ [우리반_한글블록.txt] 파일이 다운로드되었습니다!\n이 파일을 카카오톡 알림장 등에 '파일 첨부'로 보내주시면 됩니다.");
         }
 
-        // 💡 [학부모용] 버튼을 누르면 파일 선택창 띄우기
         function triggerImportFile() {
             importFileInput.click();
         }
 
-        // 학부모님이 파일을 선택하면 작동하는 로직
         importFileInput.onchange = (e) => {
             const file = e.target.files[0];
             if (!file) return;
@@ -226,7 +222,7 @@
                 }
             };
             reader.readAsText(file);
-            importFileInput.value = ''; // 초기화
+            importFileInput.value = '';
         };
 
         function addClassFolder() {
@@ -302,7 +298,6 @@
                         img.onload = function() {
                             const canvas = document.createElement('canvas');
                             
-                            // 💡 화질 복구! 사진이 깨지지 않게 300px 크기로 넉넉하게 셋팅!
                             let width = img.width; 
                             let height = img.height; 
                             const max_size = 300;
@@ -318,7 +313,6 @@
                             const ctx = canvas.getContext('2d'); 
                             ctx.drawImage(img, 0, 0, width, height);
                             
-                            // 화질 압축률 80% 적용 (얼굴 아주 선명함)
                             const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.8);
                             
                             totalData[currentClass].push({ name: friendName, photo: compressedDataUrl });
@@ -329,7 +323,7 @@
                     };
                     reader.readAsDataURL(file);
                 }
-                fileInput.value = ''; // 초기화
+                fileInput.value = '';
             };
             fileInput.click();
         }
@@ -354,13 +348,12 @@
             if(currentClass) { enterClass(currentClass); } else { showFolderView(); } 
         }
 
+        // 💡 ㅐ, ㅒ, ㅔ, ㅖ 통글자로 유지되도록 분해 맵에서 삭제!!
         const complexJungMap = { 
-            "ㅐ": ["ㅏ", "ㅣ"], "ㅒ": ["ㅑ", "ㅣ"], "ㅔ": ["ㅓ", "ㅣ"], "ㅖ": ["ㅕ", "ㅣ"], 
             "ㅘ": ["ㅗ", "ㅏ"], "ㅙ": ["ㅗ", "ㅐ"], "ㅚ": ["ㅗ", "ㅣ"], "ㅝ": ["ㅜ", "ㅓ"], 
             "ㅞ": ["ㅜ", "ㅔ"], "ㅟ": ["ㅜ", "ㅣ"], "ㅢ": ["ㅡ", "ㅣ"] 
         };
 
-        // 💡 오타 수정 완료 구역 (ㅛ가 올바르게 작동)
         function getJamoList(word) {
             const cho = ["ㄱ","ㄲ","ㄴ","ㄷ","ㄸ","ㄹ","ㅁ","ㅂ","ㅃ","ㅅ","ㅆ","ㅇ","ㅈ","ㅉ","ㅊ","ㅋ","ㅌ","ㅍ","ㅎ"];
             const jung = ["ㅏ","ㅐ","ㅑ","ㅒ","ㅓ","ㅔ","ㅕ","ㅖ","ㅗ","ㅘ","ㅙ","ㅚ","ㅛ","ㅜ","ㅝ","ㅞ","ㅟ","ㅠ","ㅡ","ㅢ","ㅣ"];
@@ -461,4 +454,39 @@
                                 box.appendChild(el); 
                                 el.style.position = 'absolute'; 
                                 el.style.left = (eRect.left - bRect.left) + 'px'; 
-                                el.style.top = (eRect.top - bRect.top)
+                                el.style.top = (eRect.top - bRect.top) + 'px'; 
+                                el.classList.add('in-box'); 
+                                placed = true; 
+                                break;
+                            }
+                        }
+                    }
+                    if (!placed) { returnToBin(el); }
+                };
+                window.addEventListener('mousemove', move); 
+                window.addEventListener('mouseup', stop); 
+                window.addEventListener('touchmove', move, {passive:false}); 
+                window.addEventListener('touchend', stop);
+            };
+            el.addEventListener('mousedown', start); 
+            el.addEventListener('touchstart', start, {passive:false});
+        }
+
+        function returnToBin(el) { 
+            el.classList.add('ready'); 
+            el.style.position = 'static'; 
+            el.style.fontSize = '50px'; 
+            bin.appendChild(el); 
+        }
+        
+        function resetGame() { initGame(currentName); }
+        
+        function changeName() { 
+            const next = prompt("새로운 이름을 입력하세요", currentName); 
+            if (next) { currentPhoto = ""; initGame(next); } 
+        }
+
+        showFolderView();
+    </script>
+</body>
+</html>
