@@ -1,164 +1,281 @@
-<!DOCTYPE html><html><head><meta charset="UTF-8"><title>초롱유치원 한글 블록</title>
-<style>
-body{background:#fdfdfd;margin:0;overflow:hidden;touch-action:none;font-family:sans-serif;display:flex;flex-direction:column;align-items:center}
-#start-screen{position:fixed;top:0;left:0;width:100vw;height:100vh;background:#f5f7fa;z-index:1000;display:flex;flex-direction:column;align-items:center;padding-top:40px;overflow-y:auto}
-#start-screen h1{font-size:36px;color:#333;margin-bottom:20px}
-.btn-group{display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap;justify-content:center}
-button{cursor:pointer;border:none;border-radius:20px;font-weight:bold;box-shadow:0 4px 6px rgba(0,0,0,0.1);transition:transform 0.1s}
-button:active{transform:scale(0.95)}
-.b-add{background:#34C759;color:#fff;padding:12px 20px;font-size:16px}
-.b-dir{background:#007AFF;color:#fff;padding:12px 20px;font-size:16px}
-.b-exp{background:#FF9500;color:#fff;padding:10px 15px;font-size:14px}
-.b-imp{background:#5856D6;color:#fff;padding:10px 15px;font-size:14px}
-.b-back{background:#aeaeae;color:#fff;padding:10px 20px;margin-bottom:20px}
-.list{display:flex;gap:20px;flex-wrap:wrap;justify-content:center;padding:20px 20px 100px;max-width:1000px}
-.card{width:200px;height:220px;background:#fff;border-radius:20px;box-shadow:0 6px 15px rgba(0,0,0,0.1);display:flex;flex-direction:column;align-items:center;padding:15px;position:relative;cursor:pointer}
-.folder-card{background:#FFCC00;height:180px;justify-content:center}
-.card img{width:160px;height:160px;border-radius:15px;object-fit:cover;margin-bottom:10px;background:#eee}
-.card span{font-size:22px;font-weight:800;color:#333}
-.folder-icon{font-size:60px;margin-bottom:5px}
-.btn-del{position:absolute;top:-10px;right:-10px;width:30px;height:30px;background:#FF3B30;color:#fff;border-radius:50%;font-size:16px;z-index:10;display:flex;align-items:center;justify-content:center}
-#menu{margin-top:20px;display:flex;gap:10px;align-items:center;z-index:100}
-#hint-box{display:flex;align-items:center;gap:15px;background:#fff;padding:10px 25px;border-radius:50px;box-shadow:0 4px 10px rgba(0,0,0,0.05)}
-#hint{font-size:40px;font-weight:900;letter-spacing:5px}
-#current-photo{width:60px;height:60px;border-radius:50%;object-fit:cover;display:none}
-#drop-zone{display:flex;gap:20px;margin-top:40px}
-.char-box{width:200px;height:200px;border:4px solid #eee;background:#fff;border-radius:25px;display:flex;align-items:center;justify-content:center;position:relative}
-.char-box::before{content:attr(data-hint);font-size:120px;font-weight:900;color:#f0f0f0;position:absolute;pointer-events:none}
-.jamo{position:absolute;font-size:90px;font-weight:900;color:#444;cursor:grab;user-select:none;z-index:50}
-.jamo.in-box{color:#007AFF;z-index:40}
-#bin{width:100%;height:180px;background:#f2f2f2;border-top:2px solid #ddd;position:fixed;bottom:0;display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:15px;padding:20px;box-sizing:border-box}
-.jamo.ready{position:static;font-size:60px;background:#fff;border-radius:12px;padding:10px 20px;box-shadow:0 2px 5px rgba(0,0,0,0.1)}
-</style>
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>초롱유치원 한글 블록</title>
+    <style>
+        body { background: #fdfdfd; margin: 0; overflow: hidden; touch-action: none; font-family: 'Apple SD Gothic Neo', sans-serif; display: flex; flex-direction: column; align-items: center; }
+        
+        #start-screen { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #f5f7fa; z-index: 1000; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; overflow-y: auto; padding-top: 40px; box-sizing: border-box; }
+        #start-screen h1 { font-size: 40px; color: #333; margin-bottom: 20px; font-weight: 900; }
+        
+        .start-btn-group { display: flex; gap: 12px; margin-bottom: 20px; z-index: 1010; flex-wrap: wrap; justify-content: center; }
+        .btn-add-friend { background: #34C759; color: white; padding: 15px 25px; font-size: 18px; border-radius: 30px; border: none; font-weight: bold; cursor: pointer; box-shadow: 0 4px 10px rgba(52, 199, 89, 0.3); }
+        .btn-direct-input { background: #007AFF; color: white; padding: 15px 25px; font-size: 18px; border-radius: 30px; border: none; font-weight: bold; cursor: pointer; box-shadow: 0 4px 10px rgba(0, 122, 255, 0.3); }
+        
+        .btn-backup { background: #FF9500; color: white; padding: 10px 20px; font-size: 15px; border-radius: 20px; border: none; font-weight: bold; cursor: pointer; box-shadow: 0 4px 10px rgba(255, 149, 0, 0.2); }
+        .btn-restore { background: #5856D6; color: white; padding: 10px 20px; font-size: 15px; border-radius: 20px; border: none; font-weight: bold; cursor: pointer; box-shadow: 0 4px 10px rgba(88, 86, 214, 0.2); }
+        
+        .btn-back { background: #aeaeae; color: white; padding: 10px 20px; font-size: 16px; border-radius: 10px; border: none; font-weight: bold; cursor: pointer; margin-bottom: 20px; }
+
+        .friend-list { display: flex; gap: 25px; flex-wrap: wrap; justify-content: center; max-width: 1100px; padding: 20px; padding-bottom: 100px; }
+        
+        .class-card { width: 220px; height: 180px; background: #FFCC00; border-radius: 25px; box-shadow: 0 8px 20px rgba(255, 204, 0, 0.2); display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; transition: transform 0.2s; border: 4px solid transparent; position: relative; }
+        .class-card:hover { transform: scale(1.05); border-color: #FFA500; }
+        .class-card .folder-icon { font-size: 60px; margin-bottom: 5px; }
+        .class-card span { font-size: 26px; font-weight: 800; color: #444; }
+
+        .friend-card { width: 180px; background: white; border-radius: 20px; box-shadow: 0 8px 20px rgba(0,0,0,0.06); padding: 15px; text-align: center; cursor: pointer; transition: transform 0.2s; border: 3px solid transparent; position: relative; display: flex; flex-direction: column; align-items: center; }
+        .friend-card:hover { transform: scale(1.05); border-color: #007AFF; }
+        .friend-card img { width: 150px; height: 150px; border-radius: 15px; object-fit: cover; background: #eee; margin-bottom: 12px; }
+        .friend-card span { font-size: 24px; font-weight: 800; color: #333; display: block; width: 100%; text-align: center; white-space: nowrap; }
+        
+        .btn-delete-card { position: absolute; top: -10px; right: -10px; width: 32px; height: 32px; background: #FF3B30; color: white; border-radius: 50%; border: none; font-weight: bold; font-size: 18px; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 8px rgba(0,0,0,0.2); z-index: 10; }
+        
+        #menu { margin-top: 20px; display: flex; gap: 10px; align-items: center; z-index: 100; }
+        #hint-box { display: flex; align-items: center; gap: 15px; background: #fff; padding: 10px 30px; border-radius: 50px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+        #current-photo { width: 60px; height: 60px; border-radius: 50%; object-fit: cover; display: none; background: #eee; }
+        #hint { font-size: 40px; font-weight: 900; color: #333; letter-spacing: 10px; }
+        .btn { padding: 10px 20px; border: none; border-radius: 10px; cursor: pointer; font-weight: bold; font-size: 16px; transition: transform 0.1s; }
+        .btn:active { transform: scale(0.95); }
+        .btn-reset { background: #ffcc00; color: #333; }
+        .btn-change { background: #007AFF; color: white; }
+        .btn-home { background: #aeaeae; color: white; }
+        
+        #drop-zone { display: flex; gap: 30px; margin-top: 40px; min-height: 300px; }
+        .char-box { width: 250px; height: 250px; border: 4px solid #f0f0f0; background: white; position: relative; border-radius: 30px; display: flex; align-items: center; justify-content: center; }
+        .char-box::before { content: attr(data-hint); font-size: 140px; font-weight: 900; color: #ebebeb; position: absolute; z-index: 1; user-select: none; pointer-events: none; }
+        .jamo { position: absolute; font-size: 100px; font-weight: 900; color: #444; cursor: grab; user-select: none; line-height: 1; z-index: 50; padding: 10px; }
+        .jamo.in-box { color: #007AFF; z-index: 40; }
+        
+        #bin { width: 100%; height: 200px; background: #f2f2f2; border-top: 3px solid #ddd; position: fixed; bottom: 0; display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 15px; padding: 20px; box-sizing: border-box; z-index: 90; }
+        .jamo.ready { position: static; font-size: 80px; background: white; border-radius: 15px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); padding: 10px 20px; }
+        #file-input { display: none; }
+        #import-file-input { display: none; }
+    </style>
 </head>
 <body>
-<div id="start-screen">
-    <h1 id="main-title">📂 우리 반을 선택해 주세요</h1>
-    <div class="btn-group" id="btn-group-area"></div>
-    <button class="b-back" id="btn-back" style="display:none;" onclick="showFolderView()">⬅️ 반 목록으로 돌아가기</button>
-    <input type="file" id="file-input" accept="image/*" style="display:none">
-    <input type="file" id="import-input" accept=".txt" style="display:none">
-    <div class="list" id="main-list"></div>
-</div>
-<div id="menu">
-    <button class="b-back" onclick="goHome()">🏠 처음으로</button>
-    <button class="b-exp" onclick="resetGame()">♻️ 다시하기</button>
-    <div id="hint-box"><img id="current-photo" src=""><div id="hint">이름</div></div>
-    <button class="b-dir" onclick="changeName()">✏️ 직접 쓰기</button>
-</div>
-<div id="drop-zone"></div><div id="bin"></div>
 
-<script>
-let totalData = JSON.parse(localStorage.getItem('cr_classes') || '{}');
-function saveData() { localStorage.setItem('cr_classes', JSON.stringify(totalData)); }
-let currentClass="", currentName="", currentPhoto="";
-const ui={ scr:document.getElementById('start-screen'), tit:document.getElementById('main-title'), btns:document.getElementById('btn-group-area'), back:document.getElementById('btn-back'), lst:document.getElementById('main-list'), dz:document.getElementById('drop-zone'), bin:document.getElementById('bin'), hint:document.getElementById('hint'), pic:document.getElementById('current-photo'), fi:document.getElementById('file-input'), ii:document.getElementById('import-input') };
+    <div id="start-screen">
+        <h1 id="main-title">📂 우리 반을 선택해 주세요</h1>
+        <div class="start-btn-group" id="btn-group-area"></div>
+        <button class="btn-back" id="btn-back-folder" style="display:none;" onclick="showFolderView()">⬅️ 반 목록으로 돌아가기</button>
+        <input type="file" id="file-input" accept="image/*">
+        <input type="file" id="import-file-input" accept=".txt">
+        <div class="friend-list" id="main-list-area"></div>
+    </div>
 
-function showFolderView() {
-    currentClass = ""; ui.tit.innerText = "📂 우리 반을 선택해 주세요"; ui.back.style.display = "none";
-    ui.btns.innerHTML = `<button class="b-add" onclick="addClass()">➕ 반 추가</button><button class="b-dir" onclick="goDirect()">✏️ 글자 쓰기</button><button class="b-exp" onclick="exportFile()">💾 파일 내보내기</button><button class="b-imp" onclick="ui.ii.click()">📂 파일 불러오기</button>`;
-    ui.lst.innerHTML = '';
-    Object.keys(totalData).forEach(cn => {
-        let d=document.createElement('div'); d.className='card folder-card';
-        d.innerHTML=`<button class="btn-del" onclick="delClass(event, '${cn}')">X</button><div class="folder-icon">📁</div><span>${cn}</span>`;
-        d.onclick=(e)=>{ if(e.target.tagName!=='BUTTON') enterClass(cn); }; ui.lst.appendChild(d);
-    });
-}
+    <div id="menu">
+        <button class="btn btn-home" onclick="goHome()">🏠 처음으로</button>
+        <button class="btn btn-reset" onclick="resetGame()">♻️ 다시하기</button>
+        <div id="hint-box">
+            <img id="current-photo" src="" alt="친구 사진">
+            <div id="hint">이름</div>
+        </div>
+        <button class="btn btn-change" onclick="changeName()">✏️ 직접 쓰기</button>
+    </div>
 
-function enterClass(cn) {
-    currentClass=cn; ui.tit.innerText=`🎒 [${cn}] 친구들`; ui.back.style.display="block";
-    ui.btns.innerHTML=`<button class="b-add" onclick="ui.fi.click()">📸 사진 찍어 친구 추가</button>`;
-    ui.lst.innerHTML='';
-    (totalData[cn]||[]).forEach((f,i) => {
-        let d=document.createElement('div'); d.className='card';
-        d.innerHTML=`<button class="btn-del" onclick="delFriend(event, ${i})">X</button><img src="${f.photo}"><span>${f.name}</span>`;
-        d.onclick=(e)=>{ if(e.target.tagName!=='BUTTON') startGame(f.name, f.photo); }; ui.lst.appendChild(d);
-    });
-}
+    <div id="drop-zone"></div>
+    <div id="bin"></div>
 
-function addClass() { let n=prompt("새 반 이름:"); if(n&&!totalData[n]){ totalData[n]=[]; saveData(); showFolderView(); } }
-function delClass(e,cn) { e.stopPropagation(); if(confirm(`[${cn}] 삭제할까요?`)){ delete totalData[cn]; saveData(); showFolderView(); } }
-function delFriend(e,i) { e.stopPropagation(); if(confirm("삭제할까요?")){ totalData[currentClass].splice(i,1); saveData(); enterClass(currentClass); } }
-function goDirect() { let n=prompt("글자 입력:"); if(n) startGame(n,""); }
-function goHome() { ui.scr.style.display='flex'; currentClass?enterClass(currentClass):showFolderView(); }
+    <script>
+        let totalData = {};
+        let currentClass = ""; 
 
-// 화질 복구: 최대 350px, 화질 85%로 선명하게 저장
-ui.fi.onchange = (e) => {
-    let file=e.target.files[0]; if(!file) return;
-    let n=prompt("친구 이름:"); if(!n) return;
-    let r=new FileReader();
-    r.onload=e=>{
-        let img=new Image(); img.onload=()=>{
-            let cvs=document.createElement('canvas'), w=img.width, h=img.height, m=350;
-            if(w>h){ if(w>m){h*=m/w; w=m;} }else{ if(h>m){w*=m/h; h=m;} }
-            cvs.width=w; cvs.height=h; cvs.getContext('2d').drawImage(img,0,0,w,h);
-            totalData[currentClass].push({name:n, photo:cvs.toDataURL('image/jpeg',0.85)});
-            saveData(); enterClass(currentClass);
-        }; img.src=e.target.result;
-    }; r.readAsDataURL(file); ui.fi.value="";
-};
-
-// 파일 내보내기/가져오기 로직
-function exportFile() {
-    let b=new Blob([JSON.stringify(totalData)],{type:'text/plain'}), a=document.createElement('a');
-    a.href=URL.createObjectURL(b); a.download='hangul_class.txt'; a.click(); URL.revokeObjectURL(a.href);
-    alert("데이터가 파일로 다운로드되었습니다! 카톡으로 학부모님께 보내주세요.");
-}
-ui.ii.onchange = (e) => {
-    let f=e.target.files[0]; if(!f) return;
-    let r=new FileReader();
-    r.onload=e=>{ try{ totalData=JSON.parse(e.target.result); saveData(); showFolderView(); alert("데이터 등록 완료!"); }catch(err){ alert("오류가 발생했습니다."); } };
-    r.readAsText(f); ui.ii.value="";
-};
-
-// 한글 로직 (ㅛ 오타 수정 완료)
-const cMap={"ㅐ":["ㅏ","ㅣ"],"ㅒ":["ㅑ","ㅣ"],"ㅔ":["ㅓ","ㅣ"],"ㅖ":["ㅕ","ㅣ"],"ㅘ":["ㅗ","ㅏ"],"ㅙ":["ㅗ","ㅐ"],"ㅚ":["ㅗ","ㅣ"],"ㅝ":["ㅜ","ㅓ"],"ㅞ":["ㅜ","ㅔ"],"ㅟ":["ㅜ","ㅣ"],"ㅢ":["ㅡ","ㅣ"]};
-function getJamo(w) {
-    let cho=["ㄱ","ㄲ","ㄴ","ㄷ","ㄸ","ㄹ","ㅁ","ㅂ","ㅃ","ㅅ","ㅆ","ㅇ","ㅈ","ㅉ","ㅊ","ㅋ","ㅌ","ㅍ","ㅎ"],
-    jung=["ㅏ","ㅐ","ㅑ","ㅒ","ㅓ","ㅔ","ㅕ","ㅖ","ㅗ","ㅘ","ㅙ","ㅚ","ㅛ","ㅜ","ㅝ","ㅞ","ㅟ","ㅠ","ㅡ","ㅢ","ㅣ"],
-    jong=["","ㄱ","ㄲ","ㄳ","ㄴ","ㄵ","ㄶ","ㄷ","ㄹ","ㄺ","ㄻ","ㄼ","ㄽ","ㄾ","ㄿ","ㅀ","ㅁ","ㅂ","ㅄ","ㅅ","ㅆ","ㅇ","ㅈ","ㅊ","ㅋ","ㅌ","ㅍ","ㅎ"], res=[];
-    for(let i=0;i<w.length;i++){
-        let c=w.charCodeAt(i)-44032; if(c<0||c>11171) continue;
-        res.push(cho[Math.floor(c/588)]);
-        let j=jung[Math.floor((c%588)/28)]; cMap[j]?res.push(...cMap[j]):res.push(j);
-        if(c%28!==0) res.push(jong[c%28]);
-    } return res.map(t=>({t}));
-}
-
-function startGame(n, p) {
-    ui.scr.style.display='none'; currentName=n; currentPhoto=p; ui.hint.innerText=n;
-    if(p){ ui.pic.src=p; ui.pic.style.display='block'; }else{ ui.pic.style.display='none'; }
-    ui.dz.innerHTML=''; ui.bin.innerHTML='';
-    for(let i=0;i<n.length;i++){ let b=document.createElement('div'); b.className='char-box'; b.setAttribute('data-hint',n[i]); ui.dz.appendChild(b); }
-    getJamo(n).sort(()=>Math.random()-0.5).forEach(p=>makeP(p.t));
-}
-
-function makeP(t) {
-    let e=document.createElement('div'); e.className='jamo ready'; e.innerText=t; ui.bin.appendChild(e);
-    let ox,oy, start=ev=>{
-        let v=ev.touches?ev.touches[0]:ev, r=e.getBoundingClientRect();
-        e.classList.remove('ready','in-box'); e.style.color='#444'; e.style.position='fixed';
-        e.style.left=r.left+'px'; e.style.top=r.top+'px'; e.style.fontSize='120px';
-        document.body.appendChild(e); ox=v.clientX-e.offsetLeft; oy=v.clientY-e.offsetTop;
-        let mv=me=>{ let m=me.touches?me.touches[0]:me; e.style.left=(m.clientX-ox)+'px'; e.style.top=(m.clientY-oy)+'px'; },
-        up=()=>{
-            window.removeEventListener('mousemove',mv); window.removeEventListener('mouseup',up);
-            window.removeEventListener('touchmove',mv); window.removeEventListener('touchend',up);
-            let pl=false, bx=document.getElementsByClassName('char-box'), er=e.getBoundingClientRect();
-            for(let b of bx){
-                let br=b.getBoundingClientRect();
-                if(er.left<br.right&&er.right>br.left&&er.top<br.bottom&&er.bottom>br.top){
-                    b.appendChild(e); e.style.position='absolute'; e.style.left=(er.left-br.left)+'px'; e.style.top=(er.top-br.top)+'px'; e.classList.add('in-box'); pl=true; break;
+        // 💡 치명적인 백화 현상(하얀 화면)을 막기 위한 안전 장치 (방어 코드)
+        function loadAllData() {
+            try {
+                const saved = localStorage.getItem('chorong_multi_classes');
+                if (saved) { 
+                    totalData = JSON.parse(saved); 
+                } else { 
+                    totalData = {}; 
                 }
+            } catch(e) {
+                // 기존에 저장된 데이터가 깨져서 에러가 나더라도 죽지 않고 초기화되게 만듦
+                console.error("데이터 로드 오류, 초기화합니다.");
+                totalData = {}; 
             }
-            if(!pl){ e.classList.add('ready'); e.style.position='static'; e.style.fontSize='60px'; ui.bin.appendChild(e); }
+        }
+
+        function saveAllData() {
+            localStorage.setItem('chorong_multi_classes', JSON.stringify(totalData));
+        }
+
+        let currentName = ""; 
+        let currentPhoto = "";
+        const startScreen = document.getElementById('start-screen');
+        const mainTitle = document.getElementById('main-title');
+        const btnGroupArea = document.getElementById('btn-group-area');
+        const btnBackFolder = document.getElementById('btn-back-folder');
+        const mainListArea = document.getElementById('main-list-area');
+        const dropZone = document.getElementById('drop-zone');
+        const bin = document.getElementById('bin');
+        const hint = document.getElementById('hint');
+        const currentPhotoImg = document.getElementById('current-photo');
+        const fileInput = document.getElementById('file-input');
+        const importFileInput = document.getElementById('import-file-input');
+
+        function showFolderView() {
+            loadAllData();
+            currentClass = "";
+            mainTitle.innerText = "📂 우리 반을 선택해 주세요";
+            btnBackFolder.style.display = "none";
+            
+            // 직관적인 버튼 생성
+            btnGroupArea.innerHTML = `
+                <button class="btn-add-friend" onclick="addClassFolder()">➕ 우리 반 추가하기</button>
+                <button class="btn-direct-input" onclick="triggerDirectInput()">✏️ 글자 직접 입력하기</button>
+                <button class="btn-backup" onclick="exportToFile()">💾 우리 반 파일로 내보내기</button>
+                <button class="btn-restore" onclick="triggerImportFile()">📂 파일 불러와서 등록</button>
+            `;
+            
+            mainListArea.innerHTML = '';
+            const classes = Object.keys(totalData);
+            if (classes.length === 0) {
+                mainListArea.innerHTML = "<p style='font-size:20px; color:#666; margin-top:40px;'>왼쪽 초록색 버튼을 눌러 먼저 '우리 반 폴더'를 추가해 주세요! 💛</p>";
+                return;
+            }
+
+            classes.forEach(className => {
+                const card = document.createElement('div');
+                card.className = 'class-card';
+                card.onclick = (e) => {
+                    if(e.target.className === 'btn-delete-card') return;
+                    enterClass(className);
+                };
+                
+                const icon = document.createElement('div');
+                icon.className = 'folder-icon'; 
+                icon.innerText = "📁";
+                const span = document.createElement('span'); 
+                span.innerText = className;
+                
+                const delBtn = document.createElement('button');
+                delBtn.className = 'btn-delete-card'; 
+                delBtn.innerText = 'X';
+                delBtn.onclick = (e) => {
+                    e.stopPropagation();
+                    if(confirm(`[${className}] 반 폴더와 안의 아이들 사진을 모두 삭제할까요?`)) {
+                        delete totalData[className]; 
+                        saveAllData(); 
+                        showFolderView();
+                    }
+                };
+                
+                card.appendChild(delBtn); 
+                card.appendChild(icon); 
+                card.appendChild(span);
+                mainListArea.appendChild(card);
+            });
+        }
+
+        function exportToFile() {
+            loadAllData();
+            if (Object.keys(totalData).length === 0) {
+                alert("내보낼 데이터가 없습니다. 먼저 반과 학생을 등록해 주세요!");
+                return;
+            }
+            const dataStr = JSON.stringify(totalData);
+            const blob = new Blob([dataStr], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = 'hangul_class.txt';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+            
+            alert("우리 반 아이들 데이터가 'hangul_class.txt' 파일로 저장되었습니다! 👍\n카카오톡으로 학부모님께 이 파일을 그대로 전송해 주세요.");
+        }
+
+        function triggerImportFile() {
+            importFileInput.click();
+        }
+
+        importFileInput.onchange = (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(evt) {
+                try {
+                    const parsed = JSON.parse(evt.target.result);
+                    if (typeof parsed === 'object') {
+                        if (confirm("새로운 우리 반 친구들 명단을 가져올까요?")) {
+                            totalData = parsed;
+                            saveAllData();
+                            showFolderView();
+                            alert("우리 반 데이터 등록 완벽 성공! 🥳");
+                        }
+                    } else { 
+                        alert("올바른 파일 형식이 아닙니다."); 
+                    }
+                } catch(err) {
+                    alert("파일이 깨졌거나 올바르지 않은 백업 파일입니다.");
+                }
+            };
+            reader.readAsText(file);
+            importFileInput.value = '';
         };
-        window.addEventListener('mousemove',mv); window.addEventListener('mouseup',up);
-        window.addEventListener('touchmove',mv,{passive:false}); window.addEventListener('touchend',up);
-    };
-    e.addEventListener('mousedown',start); e.addEventListener('touchstart',start,{passive:false});
-}
-function resetGame(){ startGame(currentName, currentPhoto); }
-function changeName(){ let n=prompt("새 이름:"); if(n) startGame(n,""); }
-showFolderView();
-</script></body></html>
+
+        function addClassFolder() {
+            const className = prompt("새로 추가할 반 이름을 입력하세요 (예: 햇살반, 바다반, 새싹반):");
+            if (!className) return;
+            if (totalData[className]) { 
+                alert("이미 존재하는 반 이름입니다!"); 
+                return; 
+            }
+            totalData[className] = []; 
+            saveAllData(); 
+            showFolderView();
+        }
+
+        function enterClass(className) {
+            currentClass = className;
+            mainTitle.innerText = `🎒 [${currentClass}] 친구들 목록`;
+            btnBackFolder.style.display = "block";
+            btnGroupArea.innerHTML = `<button class="btn-add-friend" onclick="triggeraddFriend()">📸 사진 찍어 친구 추가하기</button>`;
+            renderFriendCards();
+        }
+
+        function renderFriendCards() {
+            mainListArea.innerHTML = '';
+            const friends = totalData[currentClass] || [];
+            if (friends.length === 0) {
+                mainListArea.innerHTML = "<p style='font-size:20px; color:#666; margin-top:40px;'>카메라 버튼을 눌러 우리 반 아이들을 등록해 주세요! ❤️</p>";
+                return;
+            }
+            friends.forEach((friend, index) => {
+                const card = document.createElement('div'); 
+                card.className = 'friend-card';
+                card.onclick = (e) => { 
+                    if(e.target.className === 'btn-delete-card') return; 
+                    selectFriend(friend.name, friend.photo); 
+                };
+                const img = document.createElement('img'); 
+                img.src = friend.photo;
+                const span = document.createElement('span'); 
+                span.innerText = friend.name;
+                const delBtn = document.createElement('button'); 
+                delBtn.className = 'btn-delete-card'; 
+                delBtn.innerText = 'X';
+                delBtn.onclick = (e) => {
+                    e.stopPropagation();
+                    if(confirm(`${friend.name} 친구를 삭제할까요?`)) {
+                        totalData[currentClass].splice(index, 1); 
+                        saveAllData(); 
+                        renderFriendCards();
+                    }
+                };
+                card.appendChild(delBtn); 
+                card.appendChild(img); 
+                card.appendChild(span); 
+                mainListArea.appendChild(card);
+            });
+        }
+
+        function triggeraddFriend() {
+            const friendName = prompt("추가할 친구의
