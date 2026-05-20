@@ -5,137 +5,85 @@
     <title>초롱유치원 한글 놀이</title>
     <style>
         body { background: #fdfdfd; margin: 0; overflow: hidden; touch-action: none; font-family: 'Apple SD Gothic Neo', sans-serif; display: flex; flex-direction: column; align-items: center; }
-        
-        /* 메뉴 버튼 스타일 */
-        .admin-bar { width: 100%; display: flex; justify-content: center; gap: 10px; padding: 15px; background: #fff; z-index: 2000; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
-        .btn-admin { padding: 10px 20px; border-radius: 15px; border: none; font-weight: bold; cursor: pointer; color: white; background: #FF9500; }
-
-        /* 선생님이 주신 원래 스타일 */
-        #start-screen { position: fixed; top: 60px; left: 0; width: 100vw; height: calc(100vh - 60px); background: #f5f7fa; z-index: 1000; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; overflow-y: auto; padding-top: 40px; box-sizing: border-box; }
-        #start-screen h1 { font-size: 40px; color: #333; margin-bottom: 20px; font-weight: 900; }
-        .start-btn-group { display: flex; gap: 12px; margin-bottom: 20px; z-index: 1010; flex-wrap: wrap; justify-content: center; }
-        .btn-add-friend { background: #34C759; color: white; padding: 15px 25px; font-size: 18px; border-radius: 30px; border: none; font-weight: bold; cursor: pointer; box-shadow: 0 4px 10px rgba(52, 199, 89, 0.3); }
-        .btn-direct-input { background: #007AFF; color: white; padding: 15px 25px; font-size: 18px; border-radius: 30px; border: none; font-weight: bold; cursor: pointer; box-shadow: 0 4px 122, 255, 0.3); }
-        .friend-list { display: flex; gap: 25px; flex-wrap: wrap; justify-content: center; max-width: 1100px; padding: 20px; padding-bottom: 100px; }
-        .friend-card { width: 180px; background: white; border-radius: 20px; box-shadow: 0 8px 20px rgba(0,0,0,0.06); padding: 15px; text-align: center; cursor: pointer; transition: transform 0.2s; border: 3px solid transparent; position: relative; display: flex; flex-direction: column; align-items: center; }
-        .friend-card img { width: 150px; height: 150px; border-radius: 15px; object-fit: cover; background: #eee; margin-bottom: 12px; }
-        .friend-card span { font-size: 24px; font-weight: 800; color: #333; display: block; width: 100%; text-align: center; white-space: nowrap; }
-        .btn-delete-card { position: absolute; top: -10px; right: -10px; width: 32px; height: 32px; background: #FF3B30; color: white; border-radius: 50%; border: none; font-weight: bold; font-size: 18px; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 8px rgba(0,0,0,0.2); z-index: 10; }
-        #menu { margin-top: 20px; display: flex; gap: 10px; align-items: center; z-index: 100; }
-        #drop-zone { display: flex; gap: 30px; margin-top: 40px; min-height: 300px; }
-        .char-box { width: 250px; height: 250px; border: 4px solid #f0f0f0; background: white; position: relative; border-radius: 30px; display: flex; align-items: center; justify-content: center; }
-        .char-box::before { content: attr(data-hint); font-size: 140px; font-weight: 900; color: #ebebeb; position: absolute; z-index: 1; user-select: none; pointer-events: none; }
-        .jamo { position: absolute; font-size: 100px; font-weight: 900; color: #444; cursor: grab; user-select: none; line-height: 1; z-index: 50; padding: 10px; }
-        .jamo.in-box { color: #007AFF; z-index: 40; }
-        #bin { width: 100%; height: 200px; background: #f2f2f2; border-top: 3px solid #ddd; position: fixed; bottom: 0; display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 15px; padding: 20px; box-sizing: border-box; z-index: 90; }
-        .jamo.ready { position: static; font-size: 80px; background: white; border-radius: 15px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); padding: 10px 20px; }
+        #start-screen { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #f5f7fa; z-index: 1000; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; overflow-y: auto; padding-top: 40px; }
+        .btn-add-friend { background: #34C759; color: white; padding: 15px 25px; font-size: 18px; border-radius: 30px; border: none; font-weight: bold; cursor: pointer; }
+        .friend-list { display: flex; gap: 25px; flex-wrap: wrap; justify-content: center; padding: 20px; }
+        .friend-card { width: 180px; background: white; border-radius: 20px; padding: 15px; text-align: center; cursor: pointer; border: 3px solid #ddd; }
+        .friend-card img { width: 150px; height: 150px; border-radius: 15px; object-fit: cover; }
+        #drop-zone { display: flex; gap: 30px; margin-top: 40px; }
+        .char-box { width: 200px; height: 200px; border: 4px dashed #ccc; display: flex; align-items: center; justify-content: center; font-size: 100px; }
+        .jamo { font-size: 80px; background: white; padding: 10px; cursor: grab; }
+        #bin { position: fixed; bottom: 0; width: 100%; height: 150px; background: #eee; display: flex; justify-content: center; align-items: center; gap: 10px; }
     </style>
 </head>
 <body>
 
-    <div class="admin-bar">
-        <button class="btn-admin" style="background:#FF9500" onclick="addClassFolder()">➕ 반 추가</button>
-        <button class="btn-admin" style="background:#34C759" onclick="exportData()">💾 내보내기</button>
-        <button class="btn-admin" style="background:#8E8E93" onclick="document.getElementById('file-in').click()">📂 불러오기</button>
-    </div>
-    <input type="file" id="file-in" style="display:none" accept=".txt">
-
     <div id="start-screen">
-        <h1 id="main-title">📂 반을 선택해 주세요</h1>
-        <div class="start-btn-group" id="friend-controls" style="display:none;">
-            <button class="btn-add-friend" onclick="triggeraddFriend()">📸 사진 추가</button>
-            <button class="btn-direct-input" onclick="triggerDirectInput()">✏️ 직접 쓰기</button>
-        </div>
-        <input type="file" id="file-input" accept="image/*" style="display:none">
+        <h1>초롱 한글 놀이</h1>
+        <button class="btn-add-friend" onclick="addFriend()">친구 추가</button>
         <div class="friend-list" id="friend-list"></div>
     </div>
 
-    <div id="menu">
-        <button class="btn" style="background:#aeaeae;" onclick="goHome()">🏠 처음으로</button>
-        <button class="btn" style="background:#ffcc00;" onclick="resetGame()">♻️ 다시하기</button>
-        <div id="hint-box">
-            <img id="current-photo" src="" alt="친구 사진">
-            <div id="hint">이름</div>
-        </div>
-        <button class="btn btn-change" onclick="changeName()">✏️ 직접 쓰기</button>
+    <div id="game-area" style="display:none">
+        <button onclick="location.reload()">홈으로</button>
+        <div id="drop-zone"></div>
+        <div id="bin"></div>
     </div>
 
-    <div id="drop-zone"></div>
-    <div id="bin"></div>
-
     <script>
-        let allData = JSON.parse(localStorage.getItem('chorong_final_data') || '{"우리반": []}');
-        let currentClass = "";
+        // 데이터를 브라우저에 저장해서 나중에 다시 와도 그대로 보이게 합니다.
+        let friends = JSON.parse(localStorage.getItem('my_friends') || '[]');
 
-        // 폴더 및 데이터 관리 로직
-        function showFolderView() {
-            document.getElementById('main-title').innerText = "📂 우리 반을 선택해 주세요";
-            document.getElementById('friend-controls').style.display = 'none';
+        function render() {
             const list = document.getElementById('friend-list');
             list.innerHTML = '';
-            Object.keys(allData).forEach(name => {
-                const card = document.createElement('div');
-                card.className = 'friend-card';
-                card.style.background = "#FFCC00";
-                card.innerHTML = `<div style="font-size:50px">📁</div><span>${name}</span>`;
-                card.onclick = () => { currentClass = name; showFriends(); };
-                list.appendChild(card);
+            friends.forEach((f, i) => {
+                const div = document.createElement('div');
+                div.className = 'friend-card';
+                div.innerHTML = `<img src="${f.photo}"><span>${f.name}</span>`;
+                div.onclick = () => startGame(f.name);
+                list.appendChild(div);
             });
         }
 
-        function showFriends() {
-            document.getElementById('main-title').innerText = `🎒 [${currentClass}] 친구들`;
-            document.getElementById('friend-controls').style.display = 'flex';
-            const list = document.getElementById('friend-list');
-            list.innerHTML = '';
-            allData[currentClass].forEach((f, idx) => {
-                const card = document.createElement('div');
-                card.className = 'friend-card';
-                card.innerHTML = `<button class="btn-delete-card" onclick="deleteFriend(${idx})">X</button><img src="${f.photo}"><span>${f.name}</span>`;
-                card.onclick = (e) => { if(e.target.tagName !== 'BUTTON') selectFriend(f.name, f.photo); };
-                list.appendChild(card);
-            });
+        function addFriend() {
+            const name = prompt("이름이 뭐야?");
+            if(!name) return;
+            const input = document.createElement('input'); input.type = 'file';
+            input.onchange = (e) => {
+                const reader = new FileReader();
+                reader.onload = (ev) => {
+                    friends.push({name, photo: ev.target.result});
+                    localStorage.setItem('my_friends', JSON.stringify(friends));
+                    render();
+                };
+                reader.readAsDataURL(e.target.files[0]);
+            };
+            input.click();
         }
 
-        function addClassFolder() { const name = prompt("반 이름:"); if(name) { allData[name] = []; save(); showFolderView(); } }
-        function deleteFriend(idx) { event.stopPropagation(); if(confirm("삭제?")) { allData[currentClass].splice(idx, 1); save(); showFriends(); } }
-        function save() { localStorage.setItem('chorong_final_data', JSON.stringify(allData)); }
-        
-        function exportData() {
-            const blob = new Blob([JSON.stringify(allData)], {type: 'text/plain'});
-            const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'data.txt'; a.click();
-        }
-        document.getElementById('file-in').onchange = (e) => {
-            const reader = new FileReader();
-            reader.onload = (ev) => { allData = JSON.parse(ev.target.result); save(); showFolderView(); };
-            reader.readAsText(e.target.files[0]);
-        };
-
-        // 선생님의 원래 로직 (직접 쓰기 등) 그대로 유지
-        function getJamoList(word) {
-            const cho = ["ㄱ","ㄲ","ㄴ","ㄷ","ㄸ","ㄹ","ㅁ","ㅂ","ㅃ","ㅅ","ㅆ","ㅇ","ㅈ","ㅉ","ㅊ","ㅋ","ㅌ","ㅍ","ㅎ"];
-            const jung = ["ㅏ","ㅐ","ㅑ","ㅒ","ㅓ","ㅔ","ㅕ","ㅖ","ㅗ","ㅘ","ㅙ","ㅚ","ㅛ","ㅜ","ㅝ","ㅞ","ㅟ","ㅠ","ㅡ","ㅢ","ㅣ"];
-            const jong = ["","ㄱ","ㄲ","ㄳ","ㄴ","ㄵ","ㄶ","ㄷ","ㄹ","ㄺ","ㄻ","ㄼ","ㄽ","ㄾ","ㄿ","ㅀ","ㅁ","ㅂ","ㅄ","ㅅ","ㅆ","ㅇ","ㅈ","ㅊ","ㅋ","ㅌ","ㅍ","ㅎ"];
-            // 💡 ㅐ, ㅒ, ㅔ, ㅖ 통글자 유지
-            const excludedJung = ["ㅐ", "ㅒ", "ㅔ", "ㅖ"];
-            const complexJungMap = { "ㅘ": ["ㅗ", "ㅏ"], "ㅙ": ["ㅗ", "ㅐ"], "ㅚ": ["ㅗ", "ㅣ"], "ㅝ": ["ㅜ", "ㅓ"], "ㅞ": ["ㅜ", "ㅔ"], "ㅟ": ["ㅜ", "ㅣ"], "ㅢ": ["ㅡ", "ㅣ"] };
-            const list = [];
-            for (let i = 0; i < word.length; i++) {
-                const code = word.charCodeAt(i) - 44032;
-                if (code < 0 || code > 11171) continue;
-                list.push({ text: cho[Math.floor(code / 588)] });
-                const jungChar = jung[Math.floor((code % 588) / 28)];
-                if (excludedJung.includes(jungChar)) list.push({ text: jungChar });
-                else if (complexJungMap[jungChar]) complexJungMap[jungChar].forEach(c => list.push({ text: c }));
-                else list.push({ text: jungChar });
-                if (code % 28 !== 0) list.push({ text: jong[code % 28] });
+        function startGame(name) {
+            document.getElementById('start-screen').style.display = 'none';
+            document.getElementById('game-area').style.display = 'block';
+            const dz = document.getElementById('drop-zone');
+            const bin = document.getElementById('bin');
+            dz.innerHTML = ''; bin.innerHTML = '';
+            
+            for(let char of name) {
+                const box = document.createElement('div');
+                box.className = 'char-box';
+                box.innerText = char;
+                dz.appendChild(box);
             }
-            return list;
+            name.split('').forEach(char => {
+                const jamo = document.createElement('div');
+                jamo.className = 'jamo';
+                jamo.innerText = char;
+                bin.appendChild(jamo);
+            });
         }
 
-        // 선생님이 만드셨던 triggeraddFriend, triggerDirectInput, selectFriend, initGame, createPiece 등 로직을 여기에 그대로 붙여넣으세요.
-        
-        showFolderView();
+        render();
     </script>
 </body>
 </html>
