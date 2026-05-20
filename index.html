@@ -14,7 +14,6 @@
         .btn-add-friend { background: #34C759; color: white; padding: 15px 25px; font-size: 18px; border-radius: 30px; border: none; font-weight: bold; cursor: pointer; box-shadow: 0 4px 10px rgba(52, 199, 89, 0.3); }
         .btn-direct-input { background: #007AFF; color: white; padding: 15px 25px; font-size: 18px; border-radius: 30px; border: none; font-weight: bold; cursor: pointer; box-shadow: 0 4px 10px rgba(0, 122, 255, 0.3); }
         
-        /* 💡 데이터 이동용 백업/복구 버튼 스타일 */
         .btn-backup { background: #FF9500; color: white; padding: 10px 20px; font-size: 15px; border-radius: 20px; border: none; font-weight: bold; cursor: pointer; box-shadow: 0 4px 10px rgba(255, 149, 0, 0.2); }
         .btn-restore { background: #5856D6; color: white; padding: 10px 20px; font-size: 15px; border-radius: 20px; border: none; font-weight: bold; cursor: pointer; box-shadow: 0 4px 10px rgba(88, 86, 214, 0.2); }
         
@@ -113,7 +112,6 @@
         const currentPhotoImg = document.getElementById('current-photo');
         const fileInput = document.getElementById('file-input');
 
-        // 1. 처음 반 폴더 목록 화면 그리기
         function showFolderView() {
             loadAllData();
             currentClass = "";
@@ -121,7 +119,6 @@
             mainTitle.innerText = "📂 우리 반을 선택해 주세요";
             btnBackFolder.style.display = "none";
             
-            // 💡 내보내기(백업) 및 가져오기(복구) 버튼 배치 완료
             btnGroupArea.innerHTML = `
                 <button class="btn-add-friend" onclick="addClassFolder()">➕ 우리 반 추가하기</button>
                 <button class="btn-direct-input" onclick="triggerDirectInput()">✏️ 글자 직접 입력하기</button>
@@ -171,7 +168,6 @@
             });
         }
 
-        // 💡 [치트키 1] 전체 반+아이들 데이터를 텍스트 코드로 추출하여 클립보드 복사
         function exportData() {
             loadAllData();
             if (Object.keys(totalData).length === 0) {
@@ -180,7 +176,6 @@
             }
             const dataStr = JSON.stringify(totalData);
             
-            // 임시 텍스트 영역을 만들어 클립보드에 강제 복사
             const el = document.createElement('textarea');
             el.value = dataStr;
             document.body.appendChild(el);
@@ -191,7 +186,6 @@
             alert("전체 반과 아이들 사진 데이터가 복사되었습니다! 👍\n카카오톡이나 메일로 다른 기기에 이 글자를 전송한 뒤 [데이터 가져오기]에 붙여넣으세요.");
         }
 
-        // 💡 [치트키 2] 복사해 온 코드를 다른 기기 브라우저에 강제 이식
         function importData() {
             const code = prompt("복사해 온 백업 데이터를 여기에 붙여넣어 주세요 (Ctrl + V 또는 꾹 눌러서 붙여넣기):");
             if (!code) return;
@@ -213,7 +207,6 @@
             }
         }
 
-        // 반 폴더 추가 함수
         function addClassFolder() {
             const className = prompt("새로 추가할 반 이름을 입력하세요 (예: 햇살반, 바다반, 새싹반):");
             if (!className) return;
@@ -226,7 +219,6 @@
             showFolderView();
         }
 
-        // 2. 특정 반 내부로 입장
         function enterClass(className) {
             currentClass = className;
             mainTitle.innerText = `🎒 [${currentClass}] 친구들 목록`;
@@ -291,9 +283,11 @@
                         const img = new Image();
                         img.onload = function() {
                             const canvas = document.createElement('canvas');
+                            
+                            // 💡 [핵심] 이미지 크기를 강제로 가로세로 최대 140px로 초경량화 시킵니다!
                             let width = img.width;
                             let height = img.height;
-                            const max_size = 300;
+                            const max_size = 140; 
 
                             if (width > height) {
                                 if (width > max_size) { height *= max_size / width; width = max_size; }
@@ -306,7 +300,8 @@
                             const ctx = canvas.getContext('2d');
                             ctx.drawImage(img, 0, 0, width, height);
                             
-                            const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.7);
+                            // 💡 [핵심] 화질 압축률을 30%(0.3)까지 낮추어 저장 데이터 텍스트 길이를 최소화합니다!
+                            const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.3);
                             
                             totalData[currentClass].push({ name: friendName, photo: compressedDataUrl });
                             saveAllData();
