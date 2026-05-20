@@ -6,21 +6,257 @@
     <style>
         body { background: #fdfdfd; margin: 0; overflow: hidden; touch-action: none; font-family: 'Apple SD Gothic Neo', sans-serif; display: flex; flex-direction: column; align-items: center; }
         
-        /* 메뉴 버튼 스타일 */
-        .admin-bar { width: 100%; display: flex; justify-content: center; gap: 10px; padding: 15px; background: #fff; z-index: 2000; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
-        .btn-admin { padding: 10px 20px; border-radius: 15px; border: none; font-weight: bold; cursor: pointer; color: white; background: #FF9500; }
-
-        /* 선생님이 주신 원래 스타일 */
-        #start-screen { position: fixed; top: 60px; left: 0; width: 100vw; height: calc(100vh - 60px); background: #f5f7fa; z-index: 1000; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; overflow-y: auto; padding-top: 40px; box-sizing: border-box; }
+        /* 초기 친구 선택 화면 스타일 */
+        #start-screen { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: #f5f7fa; z-index: 1000; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; overflow-y: auto; padding-top: 40px; box-sizing: border-box; }
         #start-screen h1 { font-size: 40px; color: #333; margin-bottom: 20px; font-weight: 900; }
+        
         .start-btn-group { display: flex; gap: 12px; margin-bottom: 20px; z-index: 1010; flex-wrap: wrap; justify-content: center; }
         .btn-add-friend { background: #34C759; color: white; padding: 15px 25px; font-size: 18px; border-radius: 30px; border: none; font-weight: bold; cursor: pointer; box-shadow: 0 4px 10px rgba(52, 199, 89, 0.3); }
-        .btn-direct-input { background: #007AFF; color: white; padding: 15px 25px; font-size: 18px; border-radius: 30px; border: none; font-weight: bold; cursor: pointer; box-shadow: 0 4px 122, 255, 0.3); }
+        .btn-direct-input { background: #007AFF; color: white; padding: 15px 25px; font-size: 18px; border-radius: 30px; border: none; font-weight: bold; cursor: pointer; box-shadow: 0 4px 10px rgba(0, 122, 255, 0.3); }
+        
+        /* 💡 데이터 이동용 백업/복구 버튼 스타일 */
+        .btn-backup { background: #FF9500; color: white; padding: 10px 20px; font-size: 15px; border-radius: 20px; border: none; font-weight: bold; cursor: pointer; box-shadow: 0 4px 10px rgba(255, 149, 0, 0.2); }
+        .btn-restore { background: #5856D6; color: white; padding: 10px 20px; font-size: 15px; border-radius: 20px; border: none; font-weight: bold; cursor: pointer; box-shadow: 0 4px 10px rgba(88, 86, 214, 0.2); }
+        
+        .btn-back { background: #aeaeae; color: white; padding: 10px 20px; font-size: 16px; border-radius: 10px; border: none; font-weight: bold; cursor: pointer; margin-bottom: 20px; }
+
         .friend-list { display: flex; gap: 25px; flex-wrap: wrap; justify-content: center; max-width: 1100px; padding: 20px; padding-bottom: 100px; }
+        
+        /* 📂 반 폴더 스타일 */
+        .class-card { width: 220px; height: 180px; background: #FFCC00; border-radius: 25px; box-shadow: 0 8px 20px rgba(255, 204, 0, 0.2); display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; transition: transform 0.2s; border: 4px solid transparent; position: relative; }
+        .class-card:hover { transform: scale(1.05); border-color: #FFA500; }
+        .class-card .folder-icon { font-size: 60px; margin-bottom: 5px; }
+        .class-card span { font-size: 26px; font-weight: 800; color: #444; }
+
+        /* 👤 친구 카드 스타일 */
         .friend-card { width: 180px; background: white; border-radius: 20px; box-shadow: 0 8px 20px rgba(0,0,0,0.06); padding: 15px; text-align: center; cursor: pointer; transition: transform 0.2s; border: 3px solid transparent; position: relative; display: flex; flex-direction: column; align-items: center; }
+        .friend-card:hover { transform: scale(1.05); border-color: #007AFF; }
         .friend-card img { width: 150px; height: 150px; border-radius: 15px; object-fit: cover; background: #eee; margin-bottom: 12px; }
         .friend-card span { font-size: 24px; font-weight: 800; color: #333; display: block; width: 100%; text-align: center; white-space: nowrap; }
+        
+        /* X 삭제 버튼 */
         .btn-delete-card { position: absolute; top: -10px; right: -10px; width: 32px; height: 32px; background: #FF3B30; color: white; border-radius: 50%; border: none; font-weight: bold; font-size: 18px; cursor: pointer; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 8px rgba(0,0,0,0.2); z-index: 10; }
+        
+        /* 게임 화면 스타일 */
         #menu { margin-top: 20px; display: flex; gap: 10px; align-items: center; z-index: 100; }
+        #hint-box { display: flex; align-items: center; gap: 15px; background: #fff; padding: 10px 30px; border-radius: 50px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+        #current-photo { width: 60px; height: 60px; border-radius: 50%; object-fit: cover; display: none; background: #eee; }
+        #hint { font-size: 40px; font-weight: 900; color: #333; letter-spacing: 10px; }
+        .btn { padding: 10px 20px; border: none; border-radius: 10px; cursor: pointer; font-weight: bold; font-size: 16px; transition: transform 0.1s; }
+        .btn:active { transform: scale(0.95); }
+        .btn-reset { background: #ffcc00; color: #333; }
+        .btn-change { background: #007AFF; color: white; }
+        .btn-home { background: #aeaeae; color: white; }
+        
         #drop-zone { display: flex; gap: 30px; margin-top: 40px; min-height: 300px; }
-        .char-box { width: 250px; height
+        .char-box { width: 250px; height: 250px; border: 4px solid #f0f0f0; background: white; position: relative; border-radius: 30px; display: flex; align-items: center; justify-content: center; }
+        .char-box::before { content: attr(data-hint); font-size: 140px; font-weight: 900; color: #ebebeb; position: absolute; z-index: 1; user-select: none; pointer-events: none; }
+        .jamo { position: absolute; font-size: 100px; font-weight: 900; color: #444; cursor: grab; user-select: none; line-height: 1; z-index: 50; padding: 10px; }
+        .jamo.in-box { color: #007AFF; z-index: 40; }
+        
+        #bin { width: 100%; height: 200px; background: #f2f2f2; border-top: 3px solid #ddd; position: fixed; bottom: 0; display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 15px; padding: 20px; box-sizing: border-box; z-index: 90; }
+        .jamo.ready { position: static; font-size: 80px; background: white; border-radius: 15px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); padding: 10px 20px; }
+        #file-input { display: none; }
+    </style>
+</head>
+<body>
+
+    <div id="start-screen">
+        <h1 id="main-title">📂 우리 반을 선택해 주세요</h1>
+        <div class="start-btn-group" id="btn-group-area"></div>
+        <button class="btn-back" id="btn-back-folder" style="display:none;" onclick="showFolderView()">⬅️ 반 목록으로 돌아가기</button>
+        <input type="file" id="file-input" accept="image/*">
+        <div class="friend-list" id="main-list-area"></div>
+    </div>
+
+    <div id="menu">
+        <button class="btn btn-home" onclick="goHome()">🏠 처음으로</button>
+        <button class="btn btn-reset" onclick="resetGame()">♻️ 다시하기</button>
+        <div id="hint-box">
+            <img id="current-photo" src="" alt="친구 사진">
+            <div id="hint">이름</div>
+        </div>
+        <button class="btn btn-change" onclick="changeName()">✏️ 직접 쓰기</button>
+    </div>
+
+    <div id="drop-zone"></div>
+    <div id="bin"></div>
+
+    <script>
+        let totalData = {};
+        let currentClass = ""; 
+
+        function loadAllData() {
+            const saved = localStorage.getItem('chorong_multi_classes');
+            if (saved) {
+                totalData = JSON.parse(saved);
+            } else {
+                totalData = {}; 
+            }
+        }
+
+        function saveAllData() {
+            localStorage.setItem('chorong_multi_classes', JSON.stringify(totalData));
+        }
+
+        let currentName = "";
+        let currentPhoto = "";
+        
+        const startScreen = document.getElementById('start-screen');
+        const mainTitle = document.getElementById('main-title');
+        const btnGroupArea = document.getElementById('btn-group-area');
+        const btnBackFolder = document.getElementById('btn-back-folder');
+        const mainListArea = document.getElementById('main-list-area');
+        const dropZone = document.getElementById('drop-zone');
+        const bin = document.getElementById('bin');
+        const hint = document.getElementById('hint');
+        const currentPhotoImg = document.getElementById('current-photo');
+        const fileInput = document.getElementById('file-input');
+
+        function showFolderView() {
+            loadAllData();
+            currentClass = "";
+            
+            mainTitle.innerText = "📂 우리 반을 선택해 주세요";
+            btnBackFolder.style.display = "none";
+            
+            btnGroupArea.innerHTML = `
+                <button class="btn-add-friend" onclick="addClassFolder()">➕ 우리 반 추가하기</button>
+                <button class="btn-direct-input" onclick="triggerDirectInput()">✏️ 글자 직접 입력하기</button>
+                <button class="btn-backup" onclick="exportData()">📂 데이터 내보내기/백업</button>
+                <button class="btn-restore" onclick="importData()">📥 데이터 가져오기</button>
+            `;
+            
+            mainListArea.innerHTML = '';
+            
+            const classes = Object.keys(totalData);
+            if (classes.length === 0) {
+                mainListArea.innerHTML = "<p style='font-size:20px; color:#666; margin-top:40px;'>왼쪽 초록색 버튼을 눌러 먼저 '우리 반 폴더'를 추가해 주세요! 💛</p>";
+                return;
+            }
+
+            classes.forEach(className => {
+                const card = document.createElement('div');
+                card.className = 'class-card';
+                card.onclick = (e) => {
+                    if(e.target.className === 'btn-delete-card') return;
+                    enterClass(className);
+                };
+                
+                const icon = document.createElement('div');
+                icon.className = 'folder-icon';
+                icon.innerText = "📁";
+                
+                const span = document.createElement('span');
+                span.innerText = className;
+                
+                const delBtn = document.createElement('button');
+                delBtn.className = 'btn-delete-card';
+                delBtn.innerText = 'X';
+                
+                delBtn.onclick = (e) => {
+                    e.stopPropagation();
+                    if(confirm(`[${className}] 반 폴더와 안의 아이들 사진을 모두 삭제할까요?`)) {
+                        delete totalData[className];
+                        saveAllData();
+                        showFolderView();
+                    }
+                };
+                
+                card.appendChild(delBtn);
+                card.appendChild(icon);
+                card.appendChild(span);
+                mainListArea.appendChild(card);
+            });
+        }
+
+        function exportData() {
+            loadAllData();
+            if (Object.keys(totalData).length === 0) {
+                alert("내보낼 데이터가 없습니다. 먼저 반과 학생을 등록해 주세요!");
+                return;
+            }
+            const dataStr = JSON.stringify(totalData);
+            const el = document.createElement('textarea');
+            el.value = dataStr;
+            document.body.appendChild(el);
+            el.select();
+            document.execCommand('copy');
+            document.body.removeChild(el);
+            alert("전체 데이터가 복사되었습니다! 👍");
+        }
+
+        function importData() {
+            const code = prompt("백업 데이터를 붙여넣어 주세요:");
+            if (!code) return;
+            try {
+                const parsed = JSON.parse(code);
+                totalData = parsed;
+                saveAllData();
+                showFolderView();
+                alert("성공적으로 가져왔습니다!");
+            } catch(e) {
+                alert("잘못된 데이터입니다.");
+            }
+        }
+
+        function addClassFolder() {
+            const className = prompt("반 이름:");
+            if (!className) return;
+            totalData[className] = []; 
+            saveAllData();
+            showFolderView();
+        }
+
+        function enterClass(className) {
+            currentClass = className;
+            mainTitle.innerText = `🎒 [${currentClass}] 친구들 목록`;
+            btnBackFolder.style.display = "block";
+            btnGroupArea.innerHTML = `<button class="btn-add-friend" onclick="triggeraddFriend()">📸 사진 추가</button>`;
+            renderFriendCards();
+        }
+
+        function renderFriendCards() {
+            mainListArea.innerHTML = '';
+            const friends = totalData[currentClass] || [];
+            friends.forEach((friend, index) => {
+                const card = document.createElement('div');
+                card.className = 'friend-card';
+                card.onclick = (e) => {
+                    if(e.target.className === 'btn-delete-card') return;
+                    selectFriend(friend.name, friend.photo);
+                };
+                const img = document.createElement('img');
+                img.src = friend.photo;
+                const span = document.createElement('span');
+                span.innerText = friend.name;
+                const delBtn = document.createElement('button');
+                delBtn.className = 'btn-delete-card';
+                delBtn.innerText = 'X';
+                delBtn.onclick = (e) => {
+                    e.stopPropagation();
+                    if(confirm("삭제할까요?")) {
+                        totalData[currentClass].splice(index, 1);
+                        saveAllData();
+                        renderFriendCards();
+                    }
+                };
+                card.appendChild(delBtn);
+                card.appendChild(img);
+                card.appendChild(span);
+                mainListArea.appendChild(card);
+            });
+        }
+
+        function triggeraddFriend() {
+            const friendName = prompt("친구 이름:");
+            if (!friendName) return;
+            fileInput.onchange = (e) => {
+                const file = e.target.files[0];
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    const img = new Image();
+                    img.onload = function() {
+                        const canvas = document.createElement('canvas');
+                        canvas.width = 300; canvas.height = 300;
+                        const ctx = canvas.
