@@ -2,25 +2,46 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>초롱유치원 한글 놀이</title>
+    <title>초롱 한글 블록</title>
     <style>
-        /* 선생님 베이스 스타일로 완벽 초기화 */
-        body { background: #fdfdfd; margin: 0; font-family: sans-serif; display: flex; flex-direction: column; align-items: center; }
-        #start-screen { width: 100%; display: flex; flex-direction: column; align-items: center; padding-top: 50px; }
-        .btn-group { display: flex; gap: 10px; margin-bottom: 30px; }
-        .list-container { display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; }
+        body { font-family: sans-serif; display: flex; flex-direction: column; align-items: center; background: #fdfdfd; }
+        .menu-bar { margin: 20px; display: flex; gap: 10px; }
+        .display-area { display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; padding: 20px; }
+        .card { width: 180px; height: 180px; background: #FFCC00; border-radius: 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; }
     </style>
 </head>
 <body>
-    <div id="start-screen">
-        <h1>🎒 초롱유치원 한글 놀이</h1>
-        <div class="btn-group" id="menu-btns">
-            </div>
-        <div class="list-container" id="list-area"></div>
+
+    <div class="menu-bar">
+        <button onclick="addFolder()">➕ 반 추가</button>
+        <button onclick="triggerDirectInput()">✏️ 글자 직접 쓰기</button>
     </div>
+
+    <div class="display-area" id="main-list">
+        </div>
+
     <script>
-        // 선생님의 베이스 로직부터 한 줄씩 다시 시작하겠습니다.
-        console.log("새로운 베이스 시작");
+        // 데이터 구조: { "햇살반": [{name: "철수", photo: "..."}, ...], "바다반": [] }
+        let allData = JSON.parse(localStorage.getItem('my_data') || '{}');
+
+        function renderFolders() {
+            const list = document.getElementById('main-list');
+            list.innerHTML = '';
+            Object.keys(allData).forEach(className => {
+                const div = document.createElement('div');
+                div.className = 'card';
+                div.innerHTML = `<div>📁</div><span>${className}</span>`;
+                div.onclick = () => showFriends(className);
+                list.appendChild(div);
+            });
+        }
+
+        function addFolder() {
+            const name = prompt("반 이름을 입력하세요:");
+            if(name) { allData[name] = []; localStorage.setItem('my_data', JSON.stringify(allData)); renderFolders(); }
+        }
+
+        renderFolders();
     </script>
 </body>
 </html>
