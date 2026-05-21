@@ -2,46 +2,53 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>초롱 한글 블록</title>
+    <title>초롱유치원 한글 놀이</title>
     <style>
-        body { font-family: sans-serif; display: flex; flex-direction: column; align-items: center; background: #fdfdfd; }
-        .menu-bar { margin: 20px; display: flex; gap: 10px; }
-        .display-area { display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; padding: 20px; }
-        .card { width: 180px; height: 180px; background: #FFCC00; border-radius: 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; }
+        body { background: #fdfdfd; margin: 0; font-family: 'Apple SD Gothic Neo', sans-serif; display: flex; flex-direction: column; align-items: center; }
+        
+        #start-screen { width: 100%; padding-top: 50px; display: flex; flex-direction: column; align-items: center; }
+        
+        /* 버튼들이 나열될 그룹 스타일 */
+        .btn-group { 
+            display: flex; 
+            gap: 15px; 
+            margin-bottom: 40px; 
+            flex-wrap: wrap; 
+            justify-content: center; 
+        }
+        
+        .main-btn { 
+            padding: 15px 30px; 
+            font-size: 18px; 
+            border-radius: 30px; 
+            border: none; 
+            font-weight: bold; 
+            cursor: pointer; 
+            color: white; 
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1); 
+        }
+        
+        #list-area { display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; width: 100%; max-width: 1000px; }
     </style>
 </head>
 <body>
 
-    <div class="menu-bar">
-        <button onclick="addFolder()">➕ 반 추가</button>
-        <button onclick="triggerDirectInput()">✏️ 글자 직접 쓰기</button>
-    </div>
-
-    <div class="display-area" id="main-list">
+    <div id="start-screen">
+        <h1>🎒 초롱유치원 한글 놀이</h1>
+        
+        <div class="btn-group">
+            <button class="main-btn" style="background:#34C759" onclick="alert('반 추가 기능')">➕ 반 추가</button>
+            <button class="main-btn" style="background:#007AFF" onclick="alert('직접 쓰기 기능')">✏️ 직접 쓰기</button>
+            <button class="main-btn" style="background:#FF9500" onclick="alert('데이터 내보내기')">💾 내보내기</button>
+            <button class="main-btn" style="background:#8E8E93" onclick="alert('데이터 불러오기')">📂 불러오기</button>
         </div>
 
+        <div id="list-area"></div>
+    </div>
+
     <script>
-        // 데이터 구조: { "햇살반": [{name: "철수", photo: "..."}, ...], "바다반": [] }
-        let allData = JSON.parse(localStorage.getItem('my_data') || '{}');
-
-        function renderFolders() {
-            const list = document.getElementById('main-list');
-            list.innerHTML = '';
-            Object.keys(allData).forEach(className => {
-                const div = document.createElement('div');
-                div.className = 'card';
-                div.innerHTML = `<div>📁</div><span>${className}</span>`;
-                div.onclick = () => showFriends(className);
-                list.appendChild(div);
-            });
-        }
-
-        function addFolder() {
-            const name = prompt("반 이름을 입력하세요:");
-            if(name) { allData[name] = []; localStorage.setItem('my_data', JSON.stringify(allData)); renderFolders(); }
-        }
-
-        renderFolders();
+        // 이제 여기에 하나씩 기능을 연결하면 됩니다.
+        console.log("버튼 나열 뼈대 준비 완료");
     </script>
 </body>
 </html>
